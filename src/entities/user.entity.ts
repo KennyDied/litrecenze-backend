@@ -16,7 +16,7 @@ export class User {
   name: string;
 
   @Column()
-  second_name: string;
+  secondName: string;
 
   @Column()
   phone: string;

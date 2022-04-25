@@ -8,7 +8,15 @@ import { UpdateRoleDto } from '../dto/update/update-role.dto';
 
 @Injectable()
 export class RolesService {
-  constructor(@InjectRepository(Role) private rolesRepository: Repository<Role>) {}
+  constructor(@InjectRepository(Role) private rolesRepository: Repository<Role>) {
+    (async () => {
+      const userRole = await rolesRepository.findOne({ where: { value: 'USER' }});
+      const adminRole = await rolesRepository.findOne( { where: { value: 'ADMIN' }});
+
+      if (!userRole) await rolesRepository.save({ value: 'USER', description: 'Пользователь' });
+      if (!adminRole) await rolesRepository.save({ value: 'ADMIN', description: 'Администратор' });
+    })();
+  }
 
   async getRole(value: string) {
     return await this.rolesRepository.findOne({
