@@ -1,1 +1,1 @@
-export const ROLE_ALREADY_EXISTS = 'Роль с таким значением уже создана.';
+export const ROLE_ALREADY_EXISTS = 'Роль с таким значением уже существует.';
