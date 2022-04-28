@@ -69,9 +69,7 @@ export class UsersService {
     const user = await this.userRepository.findOne({where: {id}, relations: ['roles']});
     const adminRole = await this.rolesService.getRole('ADMIN');
     if (!user) throw new HttpException(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
-    console.log(user);
     if (!user.roles.includes(adminRole)) {
-
       user.roles.push(adminRole);
       await this.userRepository.save(user);
     }

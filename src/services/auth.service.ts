@@ -4,6 +4,7 @@ import { compare, hash } from 'bcrypt';
 import { JwtService } from '@nestjs/jwt';
 import { RegisterDto } from '../dto/auth/register.dto';
 import { PASSWORD_NOT_CORRECT, USER_ALREADY_REGISTERED, USER_NOT_REGISTERED } from '../errors/auth.error';
+import { LoginDto } from '../dto/auth/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -13,6 +14,7 @@ export class AuthService {
   ) {}
 
   async validateUser(email: string, password: string) {
+
     let user = await this.usersService.getUserByEmail(email);
     if (!user) throw new HttpException(USER_NOT_REGISTERED, HttpStatus.BAD_REQUEST);
     user = await this.usersService.getUserById(user.id);
@@ -34,12 +36,12 @@ export class AuthService {
     return await this.usersService.createUser({ ...other, passwordHash });
   }
 
-  async login({ email, password }) {
-    const result = await this.validateUser(email, password);
+  async login(dto: LoginDto) {
+    const result = await this.validateUser(dto.email, dto.password);
     if (!result) throw new HttpException(PASSWORD_NOT_CORRECT, 401);
 
     const payload = {
-      email: result.email,
+      id: result.id,
       roles: result.roles,
     };
 
