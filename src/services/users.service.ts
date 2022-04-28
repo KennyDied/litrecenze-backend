@@ -3,10 +3,11 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from '../entities/user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from '../dto/create/create-user.dto';
-import { USER_ALREADY_EXISTS } from '../errors/users.eror';
+import { USER_ALREADY_EXISTS, USER_NOT_FOUND } from '../errors/users.eror';
 import { RolesService } from './roles.service';
 import { ConfigService } from '@nestjs/config';
 import { hash } from 'bcrypt';
+import { SearchAttributesDto } from '../dto/search/search-attributes.dto';
 
 @Injectable()
 export class UsersService {
@@ -22,14 +23,14 @@ export class UsersService {
         const adminPass = configService.get<string>('ADMIN_PASSWORD');
 
         // Если Админ существует - не создаем новый
-        const admin = userRepository.findOne({ where: { email: adminEmail } });
+        const admin = userRepository.findOne({where: {email: adminEmail}});
         if (admin) return;
 
         if (adminEmail && adminPass) {
           const admin = userRepository.create({
             email: adminEmail,
             passwordHash: await hash(adminPass, 10),
-            name: 'Администратор',
+            firstName: 'Администратор',
             secondName: '',
             phone: '',
           });
@@ -52,7 +53,40 @@ export class UsersService {
     return this.userRepository.save(newUser);
   }
 
+  async getUserByEmail(email: string) {
+    return this.userRepository.findOne({where: {email}})
+  }
+
+  async getUserById(id: number) {
+    return await this.userRepository.findOne({ where: { id }, relations: ['roles'] })
+  }
+
   async getAll() {
     return this.userRepository.find();
+  }
+
+  async addAdminPermission(id: number) {
+    const user = await this.userRepository.findOne({where: {id}, relations: ['roles']});
+    const adminRole = await this.rolesService.getRole('ADMIN');
+    if (!user) throw new HttpException(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    console.log(user);
+    if (!user.roles.includes(adminRole)) {
+
+      user.roles.push(adminRole);
+      await this.userRepository.save(user);
+    }
+  }
+
+  async deleteUser(id: number) {
+    const user = await this.userRepository.findOne({where: {id}});
+    if (!user) throw new HttpException(USER_NOT_FOUND, HttpStatus.NOT_FOUND);
+    await this.userRepository.delete(id);
+  }
+
+  async searchUsers(dto: SearchAttributesDto) {
+    const search = Object.fromEntries(Object.entries(dto).filter(([key, value]) => value));
+    return await this.userRepository.find({
+      where: { ...search }
+    });
   }
 }

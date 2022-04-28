@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import ormConfig from '../configs/orm.config';
 import { UsersModule } from './users.module';
 import { RolesModule } from './roles.module';
+import { AuthModule } from './auth.module';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { RolesModule } from './roles.module';
       inject: [ConfigService],
       imports: [ConfigModule],
     }),
+    AuthModule,
     UsersModule,
     RolesModule,
   ],

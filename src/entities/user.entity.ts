@@ -13,7 +13,7 @@ export class User {
   passwordHash: string;
 
   @Column()
-  name: string;
+  firstName: string;
 
   @Column()
   secondName: string;
