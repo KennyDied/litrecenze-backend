@@ -23,7 +23,7 @@ export class UsersService {
         const adminPass = configService.get<string>('ADMIN_PASSWORD');
 
         // Если Админ существует - не создаем новый
-        const admin = userRepository.findOne({where: {email: adminEmail}});
+        const admin = await userRepository.findOne({where: {email: adminEmail}});
         if (admin) return;
 
         if (adminEmail && adminPass) {
