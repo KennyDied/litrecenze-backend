@@ -12,6 +12,6 @@ import { AuthModule } from './auth.module';
   ],
   providers: [AuthorsService],
   controllers: [AuthorsController],
-  exports: [],
+  exports: [AuthorsService],
 })
 export class AuthorsModule {}
