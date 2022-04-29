@@ -9,8 +9,10 @@ import {
 } from '@nestjs/common';
 import { UsersService } from '../services/users.service';
 import { JwtAuthGuard } from '../guards/jwt.guard';
+import { RolesGuard } from '../guards/roles.guard';
+import { Roles } from '../decorators/roles.decorator';
 
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -26,12 +28,13 @@ export class UsersController {
     }
     return (await this.usersService.getAll()).map(({ passwordHash, ...result }) => result);
   }
-
+  @Roles('ADMIN')
   @Patch('permission/:id')
   async addAdminPermission(@Param('id') id: number) {
     return await this.usersService.addAdminPermission(id);
   }
 
+  @Roles('ADMIN')
   @Delete(':id')
   async deleteUser(@Param('id') id: number) {
     await this.usersService.deleteUser(id);

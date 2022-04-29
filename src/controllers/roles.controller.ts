@@ -7,18 +7,17 @@ import { Roles } from '../decorators/roles.decorator';
 import { RolesGuard } from '../guards/roles.guard';
 
 @UseGuards(JwtAuthGuard, RolesGuard)
+@Roles('ADMIN')
 @Controller('roles')
 export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
   @Get(':value')
-  @Roles('USER')
   async getRoleBy(@Param('value') value: string) {
     return await this.rolesService.getRole(value);
   }
 
   @Get()
-  @Roles('ADMIN')
   async getAllRoles() {
     return await this.rolesService.getAll();
   }
