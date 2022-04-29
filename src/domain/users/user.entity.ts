@@ -1,5 +1,6 @@
-import { Column, Entity, JoinTable, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Role } from '../roles/role.entity';
+import { Review } from '../reviews/review.entity';
 
 @Entity('users')
 export class User {
@@ -24,6 +25,9 @@ export class User {
   @ManyToMany(() => Role, role => role.user)
   @JoinTable()
   roles: Role[];
+
+  @OneToMany(() => Review, review => review.user)
+  reviews: Review[];
 
   @Column({ nullable: true })
   description: string;

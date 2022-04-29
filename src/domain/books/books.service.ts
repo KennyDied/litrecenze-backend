@@ -14,6 +14,10 @@ export class BooksService {
     private authorsService: AuthorsService,
   ) {}
 
+  async getById(id: number) {
+    return await this.booksRepository.findOne({ where: {id} });
+  }
+
   async create({ authorId, ...dto }: CreateBookDto) {
     const author = await this.authorsService.getById(authorId);
     const book = this.booksRepository.create(dto);

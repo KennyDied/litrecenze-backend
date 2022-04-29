@@ -17,7 +17,7 @@ export class AuthService {
 
     let user = await this.usersService.getUserByEmail(email);
     if (!user) throw new HttpException(USER_NOT_REGISTERED, HttpStatus.BAD_REQUEST);
-    user = await this.usersService.getUserById(user.id);
+    user = await this.usersService.getUserWithRelations(user.id);
 
     const passIsCorrect = await compare(password, user.passwordHash);
     if (passIsCorrect) {

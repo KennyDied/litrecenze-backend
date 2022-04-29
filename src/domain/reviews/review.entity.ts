@@ -1,8 +1,8 @@
-import { Column, Entity, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
 import { Book } from '../books/book.entity';
 import { User } from '../users/user.entity';
 
-@Entity()
+@Entity('reviews')
 export class Review {
   @PrimaryGeneratedColumn()
   id: number;
@@ -16,9 +16,9 @@ export class Review {
   @Column({ type: 'float' })
   rate: number;
 
-  @OneToOne(() => Book, book => book.id)
+  @ManyToOne(() => Book, book => book.reviews)
   book: Book;
 
-  @OneToOne(() => User, user => user.id)
+  @ManyToOne(() => User, user => user.reviews)
   user: User;
 }

@@ -57,8 +57,12 @@ export class UsersService {
     return this.userRepository.findOne({where: {email}})
   }
 
-  async getUserById(id: number) {
+  async getUserWithRelations(id: number) {
     return await this.userRepository.findOne({ where: { id }, relations: ['roles'] })
+  }
+
+  async getUser(id: number) {
+    return await this.userRepository.findOne({ where: { id }});
   }
 
   async getAll() {
