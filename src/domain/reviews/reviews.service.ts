@@ -6,7 +6,7 @@ import { UsersService } from '../users/users.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import * as moment from 'moment';
 import { BooksService } from '../books/books.service';
-import { SearchDto } from './dto/search.dto';
+import { SearchReviewDto } from './dto/search-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
 
 @Injectable()
@@ -17,7 +17,7 @@ export class ReviewsService {
     private booksService: BooksService,
   ) {}
 
-  async getAll(dto: SearchDto) {
+  async getAll(dto: SearchReviewDto) {
     const search = Object.entries(dto).filter(([,value]) => value).reduce((a, [key, value]) => {
       if (typeof value === 'string') return { ...a, [key]: ILike(`%${value.toLowerCase()}%`) }
       return { ...a, [key]: value };
