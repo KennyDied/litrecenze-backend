@@ -7,6 +7,7 @@ import { CreateReviewDto } from './dto/create-review.dto';
 import * as moment from 'moment';
 import { BooksService } from '../books/books.service';
 import { SearchDto } from './dto/search.dto';
+import { UpdateReviewDto } from './dto/update-review.dto';
 
 @Injectable()
 export class ReviewsService {
@@ -46,4 +47,13 @@ export class ReviewsService {
     const { passwordHash, ...result } = user;
     return { ...other, user: { ...result }};
   }
+
+  async remove(id: number) {
+    return await this.reviewRepository.delete(id);
+  }
+
+  async update(id: number, dto: UpdateReviewDto) {
+    return await this.reviewRepository.update(id, dto);
+  }
 }
+
