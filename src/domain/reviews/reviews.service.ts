@@ -1,11 +1,12 @@
 import { HttpException, HttpStatus, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Review } from './review.entity';
-import { Repository } from 'typeorm';
+import { ILike, Like, Repository } from 'typeorm';
 import { UsersService } from '../users/users.service';
 import { CreateReviewDto } from './dto/create-review.dto';
 import * as moment from 'moment';
 import { BooksService } from '../books/books.service';
+import { SearchDto } from './dto/search.dto';
 
 @Injectable()
 export class ReviewsService {
@@ -15,8 +16,20 @@ export class ReviewsService {
     private booksService: BooksService,
   ) {}
 
-  async getAll() {
-    return await this.reviewRepository.find({ relations: ['user', 'book'] });
+  async getAll(dto: SearchDto) {
+    const search = Object.entries(dto).filter(([,value]) => value).reduce((a, [key, value]) => {
+      if (typeof value === 'string') return { ...a, [key]: ILike(`%${value.toLowerCase()}%`) }
+      return { ...a, [key]: value };
+    }, {});
+
+    return await this.reviewRepository.find({
+      where: {
+        book: {
+          ...search,
+        },
+      },
+      relations: ['user', 'book']
+    });
   }
 
   async create(user_, dto: CreateReviewDto) {
