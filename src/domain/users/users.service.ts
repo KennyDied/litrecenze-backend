@@ -3,11 +3,13 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
-import { USER_ALREADY_EXISTS, USER_NOT_FOUND } from './users.eror';
+import { BOOK_ALREADY_EXISTS, USER_ALREADY_EXISTS, USER_NOT_FOUND } from './users.eror';
 import { RolesService } from '../roles/roles.service';
 import { ConfigService } from '@nestjs/config';
 import { hash } from 'bcrypt';
 import { SearchAttributesDto } from './dto/search-attributes.dto';
+import { Book } from '../books/book.entity';
+import { rethrow } from '@nestjs/core/helpers/rethrow';
 
 @Injectable()
 export class UsersService {
@@ -58,7 +60,10 @@ export class UsersService {
   }
 
   async getUserWithRelations(id: number) {
-    return await this.userRepository.findOne({ where: { id }, relations: ['roles'] })
+    return await this.userRepository.findOne({
+      where: { id },
+      relations: ['roles', 'reviews', 'books']
+    });
   }
 
   async getUser(id: number) {
@@ -67,6 +72,15 @@ export class UsersService {
 
   async getAll() {
     return this.userRepository.find();
+  }
+
+  async addBook(userId: number, book: Book) {
+    const user = await this.getUserWithRelations(userId);
+    if (user.books.some(b => book.id === b.id)) {
+      throw new HttpException(BOOK_ALREADY_EXISTS, HttpStatus.BAD_REQUEST);
+    }
+    user.books.push(book);
+    return await this.userRepository.save(user);
   }
 
   async addAdminPermission(id: number) {

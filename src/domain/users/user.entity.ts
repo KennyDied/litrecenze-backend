@@ -1,6 +1,7 @@
 import { Column, Entity, JoinTable, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Role } from '../roles/role.entity';
 import { Review } from '../reviews/review.entity';
+import { Book } from '../books/book.entity';
 
 @Entity('users')
 export class User {
@@ -26,7 +27,11 @@ export class User {
   @JoinTable()
   roles: Role[];
 
-  @OneToMany(() => Review, review => review.user)
+  @ManyToMany(() => Book)
+  @JoinTable()
+  books: Book[];
+
+  @OneToMany(() => Review, review => review.user, { cascade: true })
   reviews: Review[];
 
   @Column({ nullable: true })
