@@ -16,5 +16,6 @@ import { BooksModule } from '../books/books.module';
   ],
   providers: [ReviewsService],
   controllers: [ReviewsController],
+  exports: [ReviewsService],
 })
 export class ReviewsModule {}

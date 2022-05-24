@@ -33,6 +33,17 @@ export class ReviewsService {
     });
   }
 
+  async getByID(id: number) {
+    return await this.reviewRepository.findOne({
+      where: {
+        id
+      },
+      relations: {
+        book: true,
+      }
+    })
+  }
+
   async create(user_, dto: CreateReviewDto) {
     const reviewAuthor = await this.usersService.getUser(user_.id);
     const book = await this.booksService.getById(dto.bookId);

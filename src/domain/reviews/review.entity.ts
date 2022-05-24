@@ -25,7 +25,7 @@ export class Review {
   @ManyToOne(() => Book, book => book.reviews)
   book: Book;
 
-  @ApiProperty()
+  @ApiProperty()  
   @ManyToOne(() => User, user => user.reviews)
   user: User;
 }
