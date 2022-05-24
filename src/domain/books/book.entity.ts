@@ -19,9 +19,9 @@ export class Book {
   @Column({ default: 0, nullable: true, type: 'float' })
   rate: number;
 
-  @ManyToOne(() => Author, author => author.books)
+  @ManyToOne(() => Author, author => author.books, { cascade: true })
   author: Author;
 
-  @OneToMany(() => Review, review => review.book)
+  @OneToMany(() => Review, review => review.book, { cascade: true })
   reviews: Review[];
 }

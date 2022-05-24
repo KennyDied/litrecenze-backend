@@ -5,4 +5,6 @@ export class SearchBookDto {
   readonly authorId?: number;
   @ApiProperty()
   readonly title?: string;
+  @ApiProperty()
+  readonly rate?: number;
 }

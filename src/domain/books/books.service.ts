@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Like, Repository } from 'typeorm';
+import { LessThanOrEqual, Like, MoreThanOrEqual, Repository } from 'typeorm';
 import { Book } from './book.entity';
 import { AuthorsService } from '../authors/authors.service';
 import { CreateBookDto } from './dto/create-book.dto';
@@ -29,12 +29,22 @@ export class BooksService {
   async getAll(dto: SearchBookDto) {
     const search = Object.entries(dto).filter(([,value]) => value).reduce((a, [key, value]) => {
       if (key === 'authorId') return { ...a, ['author']:{id: value} };
+      if (key === 'rate') return {...a, [key]: MoreThanOrEqual(value)};
       if (typeof value === 'string') return { ...a, [key]: Like(`%${value}%`) }
       return { ...a, [key]: value };
     }, {});
     return await this.booksRepository.find({
       where: { ...search },
       relations: ['author']});
+  }
+
+  async getNews() {
+    const COUNT = 15;
+    const result = await this.booksRepository.find();
+    if (result.length - 1 - COUNT <= 0) {
+      return result;
+    }
+    return result.slice(result.length - 1 - COUNT, result.length);
   }
 
   async delete(id: number) {

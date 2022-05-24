@@ -27,8 +27,14 @@ export class BooksController {
   async getAll(
     @Query('authorId') authorId: number,
     @Query('title') title: string,
+    @Query('rate') rate: number,
   ) {
-    return await this.booksService.getAll({ authorId, title });
+    return await this.booksService.getAll({ authorId, title, rate });
+  }
+
+  @Get('news')
+  async getNews() {
+    return await this.booksService.getNews();
   }
 
   @Roles('ADMIN')
