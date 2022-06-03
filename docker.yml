@@ -1,0 +1,47 @@
+# docker-compose.dev.yml
+version: '3'
+
+services:
+  # postgres
+  db:
+    image: postgres:14.1-alpine
+    restart: unless-stopped
+    container_name: postgres
+    env_file: .env.development # какой env-файл использовать
+    volumes:
+      - ./.docker/init-user-db.sh:/docker-entrypoint-initdb.d/init-user-db.sh:ro
+      # если нужен дамп реальной базы вместо скрипта указать его
+      # - ./.docker/db.sql:/docker-entrypoint-initdb.d/db.sql
+      - pg_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  # удобный веб-интерфейс для баз данных
+  adminer:
+    image: adminer
+    restart: unless-stopped
+    container_name: adminer
+    ports:
+      - "8080:8080"
+
+  # nestjs
+  nest_api:
+    container_name: nest_api
+    image: nest-api:1.0.0
+    build:
+      context: .              # контекст сборки, для нас это корень проекта
+      target: development     # точка из Dockerfile
+      dockerfile: .docker/Dockerfile
+    command: npm run start:dev # запуск команды nestjs для разработки
+    env_file: .env.development
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    restart: unless-stopped
+    depends_on: # ждёт запуска базы
+      - db
+
+volumes:
+  pg_data:
