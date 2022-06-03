@@ -10,6 +10,7 @@ import { BooksModule } from './books/books.module';
 import { ReviewsModule } from './reviews/reviews.module';
 import { ProfileModule } from './profile/profile.module';
 import { ClubsModule } from './clubs/clubs.module';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { ClubsModule } from './clubs/clubs.module';
     ReviewsModule,
     ProfileModule,
     ClubsModule,
+    ChatModule,
   ],
 })
 export class AppModule {}
