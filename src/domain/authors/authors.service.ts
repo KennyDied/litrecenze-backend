@@ -37,7 +37,7 @@ export class AuthorsService {
     const author = {
       ...dto,
       dateOfBirth: moment(dto.dateOfBirth).format(FORMAT),
-      dateOfDeath: moment(dto.dateOfDeath).format(FORMAT),
+      dateOfDeath: dto.dateOfDeath ? moment(dto.dateOfDeath).format(FORMAT) : null,
     };
     return await this.authorsRepository.save(author);
 

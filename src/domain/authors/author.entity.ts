@@ -19,7 +19,7 @@ export class Author {
   dateOfBirth: Date;
 
   @Column({ nullable: true })
-  dateOfDeath: Date;
+  dateOfDeath: Date | null;
 
   @Column({ nullable: true })
   description: string;

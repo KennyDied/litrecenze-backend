@@ -43,7 +43,7 @@ export class BooksService {
     const result = await this.booksRepository.find({
       where: { ...search },
       relations: ['author']});
-    result.forEach((el) => el.rate = el.reviews.reduce((a, v) => a + v.rate, 0) / el.reviews.length);
+    result.forEach((el) => el.rate = el.reviews?.reduce((a, v) => a + v.rate, 0) / el.reviews?.length);
     return result;
   }
 
