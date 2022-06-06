@@ -18,7 +18,6 @@ import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { RolesGuard } from '../auth/guards/roles.guard';
 import { Roles } from '../../decorators/roles.decorator';
 
-@UseGuards(JwtAuthGuard, RolesGuard)
 @Controller('books')
 export class BooksController {
   constructor(private booksService: BooksService) {}
@@ -37,6 +36,12 @@ export class BooksController {
     return await this.booksService.getNews();
   }
 
+  @Get(':id')
+  async getOne(@Param('id') id: number) {
+    return await this.booksService.getById(id);
+  }
+
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @Post()
   @HttpCode(HttpStatus.CREATED)
@@ -44,12 +49,14 @@ export class BooksController {
     return await this.booksService.create(dto);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @Delete(':id')
   async delete(@Param('id') id: number) {
     return await this.booksService.delete(id);
   }
 
+  @UseGuards(JwtAuthGuard, RolesGuard)
   @Roles('ADMIN')
   @Patch(':id')
   async update(@Param('id') id: number, @Body() dto: UpdateBookDto) {

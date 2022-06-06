@@ -62,7 +62,15 @@ export class UsersService {
   async getUserWithRelations(id: number) {
     return await this.userRepository.findOne({
       where: { id },
-      relations: ['roles', 'reviews', 'books']
+      relations: {
+        roles: true,
+        reviews: {
+          book: true,
+        },
+        books: {
+          author: true,
+        }
+      }
     });
   }
 
@@ -81,6 +89,19 @@ export class UsersService {
     }
     user.books.push(book);
     return await this.userRepository.save(user);
+  }
+
+  async removeBook(id: number, user: any) {
+    const currUser = await this.userRepository.findOne({
+      where: { id: user.id },
+      relations: {
+        books: true,
+      }
+    });
+    currUser.books = currUser.books.filter((book) => {
+      return book.id != id;
+    });
+    return await this.userRepository.save(currUser);
   }
 
   async addAdminPermission(id: number) {

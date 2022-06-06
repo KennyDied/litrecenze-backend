@@ -6,10 +6,11 @@ import { AuthModule } from '../auth/auth.module';
 import { ReviewsService } from './reviews.service';
 import { ReviewsController } from './reviews.controller';
 import { BooksModule } from '../books/books.module';
+import { UserReview } from './user-review.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Review]),
+    TypeOrmModule.forFeature([Review, UserReview]),
     forwardRef(() => UsersModule),
     forwardRef(() => AuthModule),
     BooksModule,

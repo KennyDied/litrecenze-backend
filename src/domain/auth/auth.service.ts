@@ -14,7 +14,6 @@ export class AuthService {
   ) {}
 
   async validateUser(email: string, password: string) {
-
     let user = await this.usersService.getUserByEmail(email);
     if (!user) throw new HttpException(USER_NOT_REGISTERED, HttpStatus.BAD_REQUEST);
     user = await this.usersService.getUserWithRelations(user.id);
@@ -25,6 +24,10 @@ export class AuthService {
       return result;
     }
     return null;
+  }
+
+  async getUserFromToken(token: string) {
+    return this.jwtService.decode(token);
   }
 
   async register(dto: RegisterDto) {

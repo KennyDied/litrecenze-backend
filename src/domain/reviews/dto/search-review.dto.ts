@@ -6,4 +6,7 @@ export class SearchReviewDto {
 
   @ApiProperty()
   author?: string;
+
+  @ApiProperty()
+  id?: number;
 }
