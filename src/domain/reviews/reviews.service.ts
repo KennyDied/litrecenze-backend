@@ -40,6 +40,7 @@ export class ReviewsService {
       },
       relations: {
         book: true,
+        user: true,
       }
     })
   }
