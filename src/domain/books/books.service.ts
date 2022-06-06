@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { LessThanOrEqual, Like, MoreThanOrEqual, Repository } from 'typeorm';
+import { LessThanOrEqual, ILike, MoreThanOrEqual, Repository } from 'typeorm';
 import { Book } from './book.entity';
 import { AuthorsService } from '../authors/authors.service';
 import { CreateBookDto } from './dto/create-book.dto';
@@ -37,7 +37,7 @@ export class BooksService {
     const search = Object.entries(dto).filter(([,value]) => value).reduce((a, [key, value]) => {
       if (key === 'authorId') return { ...a, ['author']:{id: value} };
       if (key === 'rate') return {...a, [key]: MoreThanOrEqual(value)};
-      if (typeof value === 'string') return { ...a, [key]: Like(`%${value}%`) }
+      if (typeof value === 'string') return { ...a, [key]: ILike(`%${value.toLowerCase()}%`) }
       return { ...a, [key]: value };
     }, {});
     const result = await this.booksRepository.find({
