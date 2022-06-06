@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToMany, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinTable, ManyToMany, ManyToOne, OneToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { User } from '../../users/user.entity';
 import { Chat } from '../../chat/entities/chat.entity';
 
@@ -10,7 +10,8 @@ export class Club {
   @Column()
   title: string;
 
-  @OneToOne(() => Chat, chat => chat.club)
+  @OneToOne(() => Chat)
+  @JoinTable()
   chat: Chat;
 
   @ManyToOne(() => User, user => user.managedClubs)

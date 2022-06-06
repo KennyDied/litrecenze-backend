@@ -6,12 +6,14 @@ import { Club } from './entities/club.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UsersService } from '../users/users.service';
 import { CLUB_NOT_FOUND, USER_ALREADY_JOINED } from './errors';
+import { ChatService } from '../chat/chat.service';
 
 @Injectable()
 export class ClubsService {
   constructor(
     @InjectRepository(Club) private clubsRepository: Repository<Club>,
     private usersService: UsersService,
+    private chatService: ChatService,
   ) {}
 
   async create(dto: CreateClubDto, req: any) {
