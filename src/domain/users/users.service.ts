@@ -62,7 +62,15 @@ export class UsersService {
   async getUserWithRelations(id: number) {
     return await this.userRepository.findOne({
       where: { id },
-      relations: ['roles', 'reviews', 'books']
+      relations: {
+        roles: true,
+        reviews: {
+          book: true,
+        },
+        books: {
+          author: true,
+        }
+      }
     });
   }
 
