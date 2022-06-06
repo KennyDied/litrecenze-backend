@@ -83,6 +83,19 @@ export class UsersService {
     return await this.userRepository.save(user);
   }
 
+  async removeBook(id: number, user: any) {
+    const currUser = await this.userRepository.findOne({
+      where: { id: user.id },
+      relations: {
+        books: true,
+      }
+    });
+    currUser.books = currUser.books.filter((book) => {
+      return book.id != id;
+    });
+    return await this.userRepository.save(currUser);
+  }
+
   async addAdminPermission(id: number) {
     const user = await this.userRepository.findOne({where: {id}, relations: ['roles']});
     const adminRole = await this.rolesService.getRole('ADMIN');

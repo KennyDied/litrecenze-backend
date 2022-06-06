@@ -1,4 +1,4 @@
-import { Controller, Get, HttpStatus, Param, Post, Put, Request, UseGuards } from '@nestjs/common';
+import { Controller, Get, HttpStatus, Param, Patch, Post, Put, Request, UseGuards } from '@nestjs/common';
 import { UsersService } from '../users/users.service';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { ReviewsService } from '../reviews/reviews.service';
@@ -41,5 +41,10 @@ export class ProfileController {
     const payload = req.user;
     const book = await this.booksService.getById(id);
     await this.usersService.addBook(payload.id, book);
+  }
+
+  @Put('drop-book/:id')
+  async dropBook(@Param('id') id: number, @Request() req) {
+    return await this.usersService.removeBook(id, req.user)
   }
 }
