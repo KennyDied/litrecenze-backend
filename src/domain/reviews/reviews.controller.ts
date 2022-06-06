@@ -3,6 +3,7 @@ import { ReviewsService } from './reviews.service';
 import { JwtAuthGuard } from '../auth/guards/jwt.guard';
 import { CreateReviewDto } from './dto/create-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
+import { LikeDto } from './dto/like.dto';
 
 @Controller('reviews')
 export class ReviewsController {
@@ -20,6 +21,15 @@ export class ReviewsController {
   @Get(':id')
   async getOne(@Param('id') id: number) {
     return await this.reviewsService.getByID(id);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('like')
+  async like(
+    @Body() { reviewId, rate }: LikeDto,
+    @Request() req
+  ) {
+    return await this.reviewsService.like(req.user.id, reviewId, rate);
   }
 
   @UseGuards(JwtAuthGuard)

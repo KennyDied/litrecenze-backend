@@ -8,11 +8,13 @@ import * as moment from 'moment';
 import { BooksService } from '../books/books.service';
 import { SearchReviewDto } from './dto/search-review.dto';
 import { UpdateReviewDto } from './dto/update-review.dto';
+import { UserReview } from './user-review.entity';
 
 @Injectable()
 export class ReviewsService {
   constructor(
     @InjectRepository(Review) private reviewRepository: Repository<Review>,
+    @InjectRepository(UserReview) private userReviewRepository: Repository<UserReview>,
     private usersService: UsersService,
     private booksService: BooksService,
   ) {}
@@ -23,26 +25,85 @@ export class ReviewsService {
       return { ...a, [key]: value };
     }, {});
 
-    return await this.reviewRepository.find({
+    const result = await this.reviewRepository.find({
       where: {
         book: {
           ...search,
         },
       },
-      relations: ['user', 'book']
+      relations: {
+        user: true,
+        book: true,
+        rateOfUsers: true,
+      }
     });
+
+    result.forEach(review => {
+      let result = review.rateOfUsers.reduce((a, v) => a + v.rate, 0) / review.rateOfUsers.length;
+      console.log(result)
+      if (isNaN(result)) {
+        console.log(result)
+        // @ts-ignore
+        review.rateOfUsers = 0;
+      } else {
+        // @ts-ignore
+        review.rateOfUsers = result;
+      }
+    });
+
+    return result;
   }
 
   async getByID(id: number) {
-    return await this.reviewRepository.findOne({
+    const result = await this.reviewRepository.findOne({
       where: {
         id
       },
       relations: {
         book: true,
         user: true,
+        rateOfUsers: true,
       }
-    })
+    });
+
+    const value = result.rateOfUsers.reduce((a, v) => a + v.rate, 0) / result.rateOfUsers.length;
+    if (isNaN(value)) {
+      // @ts-ignore
+      result.rateOfUsers = 0;
+    } else {
+      // @ts-ignore
+      result.rateOfUsers = value;
+    }
+    return result;
+  }
+
+  async like(userId: number, reviewId: number, rate: number) {
+    const user = await this.usersService.getUser(userId);
+    const review = await this.reviewRepository.findOne({
+      where: {
+        id: reviewId,
+      },
+      relations: {
+        rateOfUsers: {
+          user: true,
+        },
+        user: true,
+      }
+    });
+    if (!review.rateOfUsers) {
+      review.rateOfUsers = [];
+    } else {
+      const isExists = review.rateOfUsers.some((r) => r.user.id === user.id);
+      if (isExists) {
+        throw new HttpException('Оценка уже стоит', 400);
+      }
+    }
+
+    const userReview = await this.userReviewRepository.create({ rate });
+    userReview.user = user;
+    await this.userReviewRepository.save(userReview);
+    review.rateOfUsers.push(userReview);
+    return await this.reviewRepository.save(review);
   }
 
   async create(user_, dto: CreateReviewDto) {

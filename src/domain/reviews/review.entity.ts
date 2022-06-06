@@ -1,7 +1,8 @@
-import { Column, Entity, PrimaryGeneratedColumn, ManyToOne } from 'typeorm';
+import { Column, Entity, PrimaryGeneratedColumn, ManyToOne, JoinTable, OneToMany, ManyToMany } from 'typeorm';
 import { Book } from '../books/book.entity';
 import { User } from '../users/user.entity';
 import { ApiProperty } from '@nestjs/swagger';
+import { UserReview } from './user-review.entity';
 
 @Entity('reviews')
 export class Review {
@@ -20,6 +21,11 @@ export class Review {
   @ApiProperty()
   @Column({ type: 'float' })
   rate: number;
+
+  @ApiProperty()
+  @ManyToMany(() => UserReview)
+  @JoinTable()
+  rateOfUsers: UserReview[];
 
   @ApiProperty()
   @ManyToOne(() => Book, book => book.reviews)
