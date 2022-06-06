@@ -15,7 +15,14 @@ export class BooksService {
   ) {}
 
   async getById(id: number) {
-    return await this.booksRepository.findOne({ where: {id} });
+    const book = await this.booksRepository.findOne({
+      where: {id},
+      relations: {
+        reviews: true,
+      }
+    });
+    book.rate = book.reviews.reduce((a, v) => a + v.rate, 0) / book.reviews.length;
+    return book;
   }
 
   async create({ authorId, ...dto }: CreateBookDto) {
@@ -33,9 +40,11 @@ export class BooksService {
       if (typeof value === 'string') return { ...a, [key]: Like(`%${value}%`) }
       return { ...a, [key]: value };
     }, {});
-    return await this.booksRepository.find({
+    const result = await this.booksRepository.find({
       where: { ...search },
       relations: ['author']});
+    result.forEach((el) => el.rate = el.reviews.reduce((a, v) => a + v.rate, 0) / el.reviews.length);
+    return result;
   }
 
   async getNews() {

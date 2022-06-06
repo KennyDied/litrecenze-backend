@@ -18,7 +18,7 @@ export class ChatGateway implements OnGatewayConnection {
   async handleConnection(socket: Socket) {
     const {user, chat} = await this.chatService.getUserAndChatFromSocket(socket);
     if (!user || !chat) {
-      throw new WsException('Пизда');
+      throw new WsException('');
     }
   }
 
